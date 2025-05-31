@@ -1,0 +1,17 @@
+{
+  "name": "qbeek-test-backend",
+  "version": "1.0.0",
+  "main": "src/server.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "keywords": [
+    "backend"
+  ],
+  "author": "artyom.prilip@gmail.com",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "express": "^5.1.0"
+  }
+}
