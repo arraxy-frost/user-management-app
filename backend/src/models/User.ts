@@ -40,4 +40,10 @@ export class User extends Model {
         }
     })
     Role!: Roles;
+
+    toJSON() {
+        const values = { ...this.get() };
+        delete values.passwordHash;
+        return values;
+    }
 }
