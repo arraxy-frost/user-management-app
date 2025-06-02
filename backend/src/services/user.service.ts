@@ -35,6 +35,15 @@ export const getUserById = async (id: string): Promise<User | null> => {
             id
         }
     });
+};
+
+export const getUserByEmail = async (email: string): Promise<User | null> => {
+    return User.findOne({
+        where: {
+            email
+        },
+        plain: true
+    });
 }
 
 export const updateUser = async (id: string, update: Partial<User>): Promise<User | null> => {
