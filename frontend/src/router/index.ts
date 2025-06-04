@@ -5,6 +5,7 @@ import ProfileView from '@/views/ProfileView.vue'
 import NotFound from '@/views/NotFound.vue'
 import DashboardView from '@/views/DashboardView.vue'
 import UsersList from '@/views/UsersList.vue'
+import DefaultLayout from '@/layouts/DefaultLayout.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -15,19 +16,29 @@ const router = createRouter({
       component: LoginViewVue,
     },
     {
-      path: '/profile',
-      name: 'profile',
-      component: ProfileView,
-    },
-    {
-      path: '/dashboard',
-      name: 'dashboard',
-      component: DashboardView,
-    },
-    {
-      path: '/users',
-      name: 'users',
-      component: UsersList,
+      path: '/',
+      component: DefaultLayout,
+      children: [
+        {
+          path: '',
+          redirect: '/dashboard',
+        },
+        {
+          path: 'dashboard',
+          name: 'dashboard',
+          component: DashboardView,
+        },
+        {
+          path: 'profile',
+          name: 'profile',
+          component: ProfileView,
+        },
+        {
+          path: 'users',
+          name: 'users',
+          component: UsersList,
+        },
+      ],
     },
     {
       path: '/:pathMatch(.*)*',
