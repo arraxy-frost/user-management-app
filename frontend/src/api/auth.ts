@@ -1,21 +1,37 @@
-import api from '@/api/index.ts';
+import api from '@/api/index.ts'
 
 export const login = async (email: string, password: string) => {
   const response = await api.post('/auth/login', {
     email,
-    password
-  });
+    password,
+  })
 
   return {
     access_token: response.data.access_token,
-    user: response.data.user
+    user: response.data.user,
   }
 }
 
 export const refresh = async () => {
-  const response = await api.post('/auth/refresh');
+  try {
+    const response = await api.post('/auth/refresh')
 
-  return {
-    access_token: response.data.access_token,
+    return {
+      access_token: response.data.access_token,
+    }
+  } catch (error: any) {
+    console.warn(error)
+    return null
+  }
+}
+
+export const checkAuth = async (): Promise<boolean> => {
+  try {
+    await api.get('/auth/check')
+    return true
+  }
+  catch (error: any) {
+    console.warn(error)
+    return false
   }
 }

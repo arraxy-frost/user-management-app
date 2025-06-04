@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { login, refresh } from '@/api/auth.ts'
+import { checkAuth, login, refresh } from '@/api/auth.ts'
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
@@ -7,7 +7,7 @@ export const useAuthStore = defineStore('auth', {
       id: '',
       name: '',
       email: '',
-      Role: ''
+      Role: '',
     },
     accessToken: '',
     isAuthenticated: false,
@@ -19,7 +19,7 @@ export const useAuthStore = defineStore('auth', {
         user: {
           id: string
           name: string
-          email: string,
+          email: string
           Role: string
         }
       } = await login(email, password)
@@ -28,15 +28,23 @@ export const useAuthStore = defineStore('auth', {
       this.$state.userData = response.user
       this.$state.isAuthenticated = true
     },
+    async checkAuth() {
+      this.$state.isAuthenticated = await checkAuth()
+    },
     async logout() {
       console.log('Logout ...')
     },
-    async refresh() {
-      console.log('Refresh tokens ...')
+    async refreshTokens() {
       const response = await refresh()
 
+      if (!response) {
+        console.warn('Failed to refresh tokens')
+        this.$state.isAuthenticated = false
+        return
+      }
+
       this.$state.accessToken = response.access_token
-      console.log(this.$state)
+      this.$state.isAuthenticated = true
     },
   },
 })

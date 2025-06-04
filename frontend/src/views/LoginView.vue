@@ -14,10 +14,13 @@ const login = async () => {
 
   if (authStore.isAuthenticated) {
     console.log('Login successful');
-    await router.push('/profile');
-  }
-  else {
+    await router.push('/dashboard');
+  } else {
     console.error('Login failed');
+
+    email.value = '';
+    password.value = '';
+
     return;
   }
 };
