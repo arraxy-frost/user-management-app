@@ -30,7 +30,10 @@ export const login = async (req: Request, res: Response): Promise<any> => {
 
     setRefreshTokenCookie(res, refreshToken);
 
-    res.json({ access_token: accessToken });
+    res.json({
+        access_token: accessToken,
+        user
+    });
 }
 
 export const register = async (req: Request, res: Response): Promise<any> => {
@@ -99,8 +102,8 @@ export const refresh = async (req: Request, res: Response): Promise<any> => {
 const setRefreshTokenCookie = (res: Response, refreshToken: string): void => {
     res.cookie('refreshToken', refreshToken, {
         httpOnly: true,
-        // secure: process.env.NODE_ENV === 'production',
-        // sameSite: 'strict',
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
         maxAge: 7 * 24 * 60 * 60 * 1000,
         path: '/api/auth/refresh',
     });

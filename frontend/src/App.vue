@@ -1,14 +1,4 @@
 <script setup lang="ts">
-import { RouterView } from 'vue-router'
-import { useAuthStore } from '@/stores/auth.store.ts'
-import { onMounted } from 'vue'
-
-const authStore = useAuthStore();
-
-onMounted(() => {
-    // Check if the user is authenticated when the app is mounted
-    authStore.checkAuth();
-})
 </script>
 
 <template>

@@ -8,5 +8,14 @@ export const login = async (email: string, password: string) => {
 
   return {
     access_token: response.data.access_token,
+    user: response.data.user
+  }
+}
+
+export const refresh = async () => {
+  const response = await api.post('/auth/refresh');
+
+  return {
+    access_token: response.data.access_token,
   }
 }
