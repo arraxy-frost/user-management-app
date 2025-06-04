@@ -3,6 +3,7 @@ import * as authService from "../services/auth.service";
 import * as userService from "../services/user.service";
 import { User } from "../models/User";
 import bcrypt from "bcrypt";
+import { TokenPair } from '../shared/interfaces/TokenPair'
 
 export const login = async (req: Request, res: Response): Promise<any> => {
     const { email, password } = req.body;
@@ -27,13 +28,7 @@ export const login = async (req: Request, res: Response): Promise<any> => {
     const refreshToken = authService.generateRefreshToken(user);
     const accessToken = authService.generateAccessToken(user);
 
-    res.cookie('refreshToken', refreshToken, {
-        httpOnly: true,
-        // secure: process.env.NODE_ENV === 'production',
-        // sameSite: 'strict',
-        maxAge: 7 * 24 * 60 * 60 * 1000,
-        path: '/api/auth/refresh',
-    });
+    setRefreshTokenCookie(res, refreshToken);
 
     res.json({ access_token: accessToken });
 }
@@ -63,13 +58,7 @@ export const register = async (req: Request, res: Response): Promise<any> => {
     const refreshToken = authService.generateRefreshToken(user);
     const accessToken = authService.generateAccessToken(user);
 
-    res.cookie('refreshToken', refreshToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
-        maxAge: 7 * 24 * 60 * 60 * 1000,
-        path: '/api/auth/refresh',
-    });
+    setRefreshTokenCookie(res, refreshToken);
 
     res.json({ access_token: accessToken });
 }
@@ -94,7 +83,25 @@ export const refresh = async (req: Request, res: Response): Promise<any> => {
         return res.status(401).json({ error: 'No refresh token provided' });
     }
 
-    res.json({
-        status: authService.checkRefreshToken(refreshToken)
+    const tokenPair: TokenPair | null = await authService.refreshTokens(refreshToken);
+
+    if (!tokenPair) {
+        return res.status(401).json({ error: 'Token refreshing failed' });
+    }
+
+    setRefreshTokenCookie(res, tokenPair.refreshToken);
+
+    return res.json({
+        access_token: tokenPair.accessToken,
+    });
+}
+
+const setRefreshTokenCookie = (res: Response, refreshToken: string): void => {
+    res.cookie('refreshToken', refreshToken, {
+        httpOnly: true,
+        // secure: process.env.NODE_ENV === 'production',
+        // sameSite: 'strict',
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+        path: '/api/auth/refresh',
     });
 }

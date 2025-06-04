@@ -1,6 +1,7 @@
 import * as dotenv from 'dotenv';
 import jwt from 'jsonwebtoken';
 import { User } from "../models/User";
+import { TokenPair } from '../shared/interfaces/TokenPair'
 
 dotenv.config();
 
@@ -40,19 +41,27 @@ export const generateRefreshToken = (user: User): string => {
     );
 };
 
-export const checkRefreshToken = async (token: string): Promise<boolean> => {
+export const refreshTokens = async (token: string): Promise<TokenPair | null> => {
     try {
         const payload = jwt.verify(token, JWT_REFRESH_SECRET, refreshTokenOptions) as { id: string};
 
-        const user = await User.findByPk(payload.id, {
-            plain: true,
-        });
+        const userInstance = await User.findByPk(payload.id);
+        const user = userInstance ? userInstance.toJSON() : null;
 
-        console.log(user.dataValues);
+        if (!user) {
+            throw new Error('User not found');
+        }
 
-        return true;
+        const refreshToken = generateRefreshToken(user);
+        const accessToken = generateAccessToken(user);
+
+        return {
+            accessToken,
+            refreshToken
+        };
     }
     catch (err) {
-        return false;
+        console.error('Error refreshing tokens:', err.message);
+        return null;
     }
 }
