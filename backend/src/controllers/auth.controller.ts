@@ -29,10 +29,10 @@ export const login = async (req: Request, res: Response): Promise<any> => {
 
     res.cookie('refreshToken', refreshToken, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
+        // secure: process.env.NODE_ENV === 'production',
+        // sameSite: 'strict',
         maxAge: 7 * 24 * 60 * 60 * 1000,
-        path: 'api/auth/refresh',
+        path: '/api/auth/refresh',
     });
 
     res.json({ access_token: accessToken });
@@ -68,7 +68,7 @@ export const register = async (req: Request, res: Response): Promise<any> => {
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'strict',
         maxAge: 7 * 24 * 60 * 60 * 1000,
-        path: 'api/auth/refresh',
+        path: '/api/auth/refresh',
     });
 
     res.json({ access_token: accessToken });
@@ -84,5 +84,17 @@ export const logout = async (req: Request, res: Response): Promise<any> => {
 
     return res.status(204).json({
         message: 'Logged out',
+    });
+}
+
+export const refresh = async (req: Request, res: Response): Promise<any> => {
+    const { refreshToken } = req.cookies;
+
+    if (!refreshToken) {
+        return res.status(401).json({ error: 'No refresh token provided' });
+    }
+
+    res.json({
+        status: authService.checkRefreshToken(refreshToken)
     });
 }

@@ -39,3 +39,20 @@ export const generateRefreshToken = (user: User): string => {
         refreshTokenOptions
     );
 };
+
+export const checkRefreshToken = async (token: string): Promise<boolean> => {
+    try {
+        const payload = jwt.verify(token, JWT_REFRESH_SECRET, refreshTokenOptions) as { id: string};
+
+        const user = await User.findByPk(payload.id, {
+            plain: true,
+        });
+
+        console.log(user.dataValues);
+
+        return true;
+    }
+    catch (err) {
+        return false;
+    }
+}
