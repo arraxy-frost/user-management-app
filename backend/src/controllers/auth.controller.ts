@@ -4,6 +4,7 @@ import * as userService from "../services/user.service";
 import { User } from "../models/User";
 import bcrypt from "bcrypt";
 import { TokenPair } from '../shared/interfaces/TokenPair'
+import { AuthenticatedRequest } from '../shared/interfaces/AuthenticatedRequest'
 
 export const login = async (req: Request, res: Response): Promise<any> => {
     const { email, password } = req.body;
@@ -97,6 +98,14 @@ export const refresh = async (req: Request, res: Response): Promise<any> => {
     return res.json({
         access_token: tokenPair.accessToken,
     });
+}
+
+export const getCurrentUser = async (req: AuthenticatedRequest, res: Response): Promise<any> => {
+    const { id } = req.user as any;
+
+    const user = await userService.getUserById(id);
+
+    res.json(user)
 }
 
 const setRefreshTokenCookie = (res: Response, refreshToken: string): void => {
