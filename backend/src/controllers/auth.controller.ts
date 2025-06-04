@@ -108,6 +108,10 @@ export const getCurrentUser = async (req: AuthenticatedRequest, res: Response): 
     res.json(user)
 }
 
+export const checkAuth = async (req: AuthenticatedRequest, res: Response): Promise<any> => {
+    res.status(204).send();
+}
+
 const setRefreshTokenCookie = (res: Response, refreshToken: string): void => {
     res.cookie('refreshToken', refreshToken, {
         httpOnly: true,
