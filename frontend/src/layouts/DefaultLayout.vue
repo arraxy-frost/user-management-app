@@ -1,17 +1,15 @@
 <script setup lang="ts">
 import { useAuthStore } from '@/stores/auth.store.ts'
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 
 const router = useRouter()
+const route = useRoute()
 const authStore = useAuthStore()
-const currentPage = ref<string>('')
 
 const logout = () => {
   authStore.logout()
 }
 const redirectToPage = (page: string) => {
-  currentPage.value = page
   router.push({ path: page })
 }
 </script>
@@ -30,13 +28,13 @@ const redirectToPage = (page: string) => {
     <main class="content">
       <nav class="layout__nav">
         <button
-          :class="{ selected: currentPage === '/profile' }"
+          :class="{ selected: route.path === '/profile' }"
           @click="redirectToPage('/profile')"
         >
           Profile
         </button>
         <button
-          :class="{ selected: currentPage === '/users' }"
+          :class="{ selected: route.path === '/users' }"
           @click="redirectToPage('/users')"
         >
           UserList

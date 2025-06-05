@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { checkAuth, login, refresh } from '@/api/auth.ts'
+import { fetchProfile, checkAuth, login, refresh } from '@/api/auth.ts'
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
@@ -46,5 +46,8 @@ export const useAuthStore = defineStore('auth', {
       this.$state.accessToken = response.access_token
       this.$state.isAuthenticated = true
     },
+    async fetchProfile() {
+      this.$state.userData = await fetchProfile()
+    }
   },
 })

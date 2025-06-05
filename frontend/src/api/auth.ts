@@ -35,3 +35,13 @@ export const checkAuth = async (): Promise<boolean> => {
     return false
   }
 }
+
+export const fetchProfile = async (): Promise<{
+  id: '',
+  name: '',
+  email: '',
+  Role: '',
+}> => {
+  const response = await api.get('/auth/profile')
+  return response.data
+}
