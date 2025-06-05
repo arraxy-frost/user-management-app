@@ -1,5 +1,7 @@
 import { defineStore } from 'pinia'
-import { fetchProfile, checkAuth, login, refresh } from '@/api/auth.ts'
+import { fetchProfile, checkAuth, login, refresh, logout } from '@/api/auth.ts'
+import { updateUser } from '@/api/users.ts'
+import type { UpdateUserRequest } from '@/types/UpdateUserRequest.ts'
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
@@ -28,11 +30,9 @@ export const useAuthStore = defineStore('auth', {
       this.$state.userData = response.user
       this.$state.isAuthenticated = true
     },
-    async checkAuth() {
-      this.$state.isAuthenticated = await checkAuth()
-    },
     async logout() {
-      console.log('Logout ...')
+      await logout()
+      this.$reset();
     },
     async refreshTokens() {
       const response = await refresh()
@@ -45,6 +45,15 @@ export const useAuthStore = defineStore('auth', {
 
       this.$state.accessToken = response.access_token
       this.$state.isAuthenticated = true
+    },
+    async checkAuth() {
+      this.$state.isAuthenticated = await checkAuth()
+    },
+    async updateProfile(userData: UpdateUserRequest) {
+      await updateUser(this.$state.userData.id, userData)
+      await fetchProfile()
+
+      return true;
     },
     async fetchProfile() {
       this.$state.userData = await fetchProfile()

@@ -12,6 +12,16 @@ export const login = async (email: string, password: string) => {
   }
 }
 
+export const logout = async () => {
+  try {
+    await api.post('/auth/logout')
+    return true
+  } catch (error: any) {
+    console.warn(error)
+    return false
+  }
+}
+
 export const refresh = async () => {
   try {
     const response = await api.post('/auth/refresh')

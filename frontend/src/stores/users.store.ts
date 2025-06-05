@@ -23,8 +23,6 @@ export const useUsersStore = defineStore('users', {
       this.totalUsers = totalCount
       this.currentPage = currentPage
       this.pageSize = pageSize
-
-      console.log(this.$state)
     },
   },
 })

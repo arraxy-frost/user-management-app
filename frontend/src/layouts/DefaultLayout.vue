@@ -6,8 +6,10 @@ const router = useRouter()
 const route = useRoute()
 const authStore = useAuthStore()
 
-const logout = () => {
-  authStore.logout()
+const logout = async () => {
+  console.log('logout')
+  await authStore.logout()
+  await router.push('/login')
 }
 const redirectToPage = (page: string) => {
   router.push({ path: page })
@@ -17,7 +19,10 @@ const redirectToPage = (page: string) => {
 <template>
   <div class="layout">
     <header class="layout__header">
-      <div class="layout__header__username">Username</div>
+      <div class="layout__header__username">
+        <h3>{{ authStore.userData.name }}</h3>
+        <h6>{{ authStore.userData.email }}</h6>
+      </div>
       <button class="layout__header__logout_button" @click="logout">
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -94,6 +99,13 @@ const redirectToPage = (page: string) => {
   justify-content: flex-end;
   gap: 16px;
   padding: 0 20px;
+}
+
+.layout__header__username {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: center;
 }
 
 .layout__header__logout_button {
