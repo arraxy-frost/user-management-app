@@ -72,12 +72,10 @@ export const logout = async (req: Request, res: Response): Promise<any> => {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'strict',
-        path: 'api/auth/logout',
+        path: '/api/auth/refresh',
     });
 
-    return res.status(204).json({
-        message: 'Logged out',
-    });
+    return res.sendStatus(204);
 }
 
 export const refresh = async (req: Request, res: Response): Promise<any> => {
