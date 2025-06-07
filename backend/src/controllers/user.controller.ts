@@ -6,8 +6,6 @@ import { AuthenticatedRequest } from "../shared/interfaces/AuthenticatedRequest"
 export const getUsers = async (req: AuthenticatedRequest, res: Response) => {
     const { limit = 10, page = 1 } = req.query;
 
-    console.log(limit)
-
     res.json(await userService.getUsers(parseInt(String(limit)), parseInt(String(page))));
 }
 

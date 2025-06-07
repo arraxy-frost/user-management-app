@@ -17,7 +17,7 @@ export const login = async (req: Request, res: Response): Promise<any> => {
     const user: User = await userService.getUserByEmail(email);
 
     if (!user) {
-        return res.status(404).json({ error: 'User not found' });
+        return res.status(401).json({ error: 'Invalid email or password' });
     }
 
     const { passwordHash } = user;
