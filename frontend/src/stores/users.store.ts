@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { getUsers } from '@/api/users.ts'
+import { getUserById, getUsers } from '@/api/users.ts'
 
 interface User {
   id: string;
@@ -24,5 +24,8 @@ export const useUsersStore = defineStore('users', {
       this.currentPage = currentPage
       this.pageSize = pageSize
     },
+    async getUser(id: string) {
+      return await getUserById(id) as User;
+    }
   },
 })

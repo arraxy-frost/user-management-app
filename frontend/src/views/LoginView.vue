@@ -8,6 +8,7 @@ const router = useRouter();
 
 const email = ref<string>('');
 const password = ref<string>('');
+const error = ref<string>('');
 
 const login = async () => {
   await authStore.login(email.value, password.value);
@@ -15,8 +16,12 @@ const login = async () => {
   if (authStore.isAuthenticated) {
     console.log('Login successful');
     await router.push('/dashboard');
-  } else {
-    console.error('Login failed');
+  }
+  else {
+    console.log('Login failed');
+    error.value = 'Login failed';
+
+    setTimeout(() => error.value = '', 3000);
 
     email.value = '';
     password.value = '';
@@ -29,10 +34,18 @@ const login = async () => {
 <template>
   <div class="login-view">
     <form class="login-form" @submit.prevent="login">
-      <h2>Login form</h2>
-      <input type="email" v-model="email" />
-      <input type="password" v-model="password" />
-      <button type="submit">Login</button>
+      <h2>Login</h2>
+      <input type="email" placeholder="Email" v-model="email" />
+      <input type="password" placeholder="Password" v-model="password" />
+      <div class="buttons">
+        <button class="buttons__button-login" type="submit">Submit</button>
+        <button class="buttons__button-register">register</button>
+      </div>
+      <div class="errors" v-if="error">
+        <p v-if="!authStore.isAuthenticated" class="error-message">
+          {{ error }}
+        </p>
+      </div>
     </form>
   </div>
 </template>
@@ -44,7 +57,7 @@ const login = async () => {
     align-items: center;
     text-align: center;
     width: 100%;
-    height: 100%;
+    height: 100vh;
   }
 
   .login-form {
@@ -63,18 +76,46 @@ const login = async () => {
     border-radius: 4px;
   }
 
-  .login-form > button {
-    padding: 8px;
-    font-size: 16px;
-    background-color: #007bff;
+  .buttons {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    width: 100%;
+    margin-top: 8px;
+  }
+
+  .buttons > button {
     color: white;
     border: none;
-    border-radius: 4px;
     cursor: pointer;
     transition: background-color 0.4s ease;
   }
 
-  .login-form > button:hover {
+  .buttons__button-login {
     background-color: #0056b3;
+    padding: 8px;
+    width: 100%;
+    border-radius: 12px;
+  }
+
+  .buttons__button-login:hover {
+    background-color: #007bff;
+  }
+
+  .buttons__button-register {
+    background-color: transparent;
+    border-radius: 25px;
+    width: 100px;
+    padding: 4px;
+    font-size: 11px;
+  }
+
+  .buttons__button-register:hover {
+    background-color: rgba(64, 64, 64, 0.75);
+  }
+
+  .errors {
+    color: red;
   }
 </style>

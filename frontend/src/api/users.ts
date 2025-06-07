@@ -21,3 +21,13 @@ export const updateUser = async (userId: string, userData: UpdateUserRequest) =>
     throw new Error(error.response?.data?.message || 'Failed to update user')
   }
 }
+
+export const getUserById = async (userId: string) => {
+  try {
+    const response = await api.get(`/users/${userId}`)
+    return response.data
+  } catch (error: any) {
+    console.error('Error fetching user:', error)
+    throw new Error(error.response?.data?.message || 'Failed to fetch user')
+  }
+}

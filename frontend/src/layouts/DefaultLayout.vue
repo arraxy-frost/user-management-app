@@ -58,47 +58,61 @@ const redirectToPage = (page: string) => {
   width: 100%;
   flex-direction: column;
   justify-content: space-between;
+  color: #eee;
 }
 
 .content {
   display: flex;
   justify-content: flex-start;
   height: 100%;
-  gap: 32px;
+  gap: 16px;
+  padding: 0 16px 16px 16px;
+  box-sizing: border-box;
 }
 
 .layout__nav {
   display: flex;
   flex-direction: column;
-  width: 160px;
+  width: 220px;
+  padding: 16px;
   height: 100%;
+  border-radius: 8px;
+  gap: 8px;
 }
 
 .layout__nav > button {
   cursor: pointer;
-  background-color: transparent;
-  padding: 8px;
+  background-color: #2a2a2a;
+  padding: 10px 14px;
   border: none;
-  color: white;
-  transition: background-color 0.4s ease;
+  border-radius: 6px;
+  color: #eee;
+  text-align: left;
+  font-size: 14px;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .layout__nav > button:hover {
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: #3a3a3a;
+  box-shadow: 0 0 4px #007bff88;
 }
 
 .layout__nav > button.selected {
-  background-color: darkslategrey;
+  background-color: #007bff33;
+  color: #61dafb;
+  box-shadow: inset 0 0 0 1px #007bff88;
 }
 
 .layout__header {
-  height: 60px;
+  height: 64px;
   width: 100%;
   display: flex;
   align-items: center;
   justify-content: flex-end;
   gap: 16px;
-  padding: 0 20px;
+  padding: 0 24px;
+  box-sizing: border-box;
+  background-color: #1e1e1e;
 }
 
 .layout__header__username {
@@ -108,19 +122,38 @@ const redirectToPage = (page: string) => {
   justify-content: center;
 }
 
+.layout__header__username > h3 {
+  color: #eee;
+  font-size: 16px;
+  margin: 0;
+}
+
+.layout__header__username > h6 {
+  color: #aaa;
+  font-size: 13px;
+  margin: 0;
+}
+
 .layout__header__logout_button {
   cursor: pointer;
   display: flex;
-  height: 48px;
-  width: 48px;
+  height: 44px;
+  width: 44px;
   align-items: center;
   justify-content: center;
   border: none;
   border-radius: 50%;
-  transition: background-color 0.4s ease;
+  background-color: transparent;
+  color: white;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .layout__header__logout_button:hover {
-  background-color: darkred;
+  background-color: #4c0000;
+  color: #ffdddd;
+}
+
+.layout__footer {
+  height: 24px;
 }
 </style>

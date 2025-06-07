@@ -3,7 +3,6 @@
 
 <template>
   <div class="dashboard-view">
-    Dashboard
   </div>
 </template>
 

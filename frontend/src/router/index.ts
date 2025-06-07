@@ -6,6 +6,7 @@ import NotFound from '@/views/NotFound.vue'
 import DashboardView from '@/views/DashboardView.vue'
 import UsersList from '@/views/UsersList.vue'
 import DefaultLayout from '@/layouts/DefaultLayout.vue'
+import UserEditForm from '@/views/UserEditForm.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -34,6 +35,12 @@ const router = createRouter({
           component: ProfileView,
         },
         {
+          path: 'users/:id',
+          name: 'user-edit',
+          component: UserEditForm,
+          props: true,
+        },
+        {
           path: 'users',
           name: 'users',
           component: UsersList,
@@ -50,7 +57,6 @@ const router = createRouter({
 
 router.beforeEach(async (to, from, next) => {
   const authStore = useAuthStore()
-  console.log('Router: BeforeEach hook triggered')
 
   await authStore.checkAuth()
 
@@ -69,6 +75,11 @@ router.beforeEach(async (to, from, next) => {
     } else {
       console.log('User is authenticated after refresh')
     }
+  }
+
+  if (!authStore.userData.id) {
+    console.log('User is unknown, fetching profile')
+    await authStore.fetchProfile()
   }
 
   if (to.path === '/' || to.path === '/login') {
