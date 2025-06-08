@@ -9,7 +9,6 @@ import { AuthenticatedRequest } from '../shared/interfaces/AuthenticatedRequest'
 export const login = async (req: Request, res: Response): Promise<any> => {
     const { email, password } = req.body;
 
-    // Simple request validation
     if (!email || !password) {
         return res.status(400).json({ error: 'Email and password are required' });
     }
@@ -26,41 +25,29 @@ export const login = async (req: Request, res: Response): Promise<any> => {
         return res.status(401).json({ error: 'Invalid email or password' });
     }
 
-    const refreshToken = authService.generateRefreshToken(user);
-    const accessToken = authService.generateAccessToken(user);
+    const { refreshToken, accessToken } = await authService.ensureSession(user);
 
     setRefreshTokenCookie(res, refreshToken);
 
     res.json({
-        access_token: accessToken,
-        user
+        access_token: accessToken
     });
 }
 
 export const register = async (req: Request, res: Response): Promise<any> => {
     const { email, password } = req.body;
 
-    // Simple request validation
     if (!email || !password) {
         return res.status(400).json({ error: 'Email and password are required' });
     }
 
-    let user: User;
+    let user = await userService.createUser({
+        name: "username",
+        email: email,
+        password: password
+    });
 
-    try {
-        user = await userService.createUser({
-            name: "username",
-            email: email,
-            password: password
-        });
-    }
-    catch (err) {
-        console.error(err);
-        return res.status(500).json(err.errors);
-    }
-
-    const refreshToken = authService.generateRefreshToken(user);
-    const accessToken = authService.generateAccessToken(user);
+    const { refreshToken, accessToken } = await authService.ensureSession(user);
 
     setRefreshTokenCookie(res, refreshToken);
 
@@ -85,7 +72,7 @@ export const refresh = async (req: Request, res: Response): Promise<any> => {
         return res.status(401).json({ error: 'No refresh token provided' });
     }
 
-    const tokenPair: TokenPair | null = await authService.refreshTokens(refreshToken);
+    const tokenPair: TokenPair | null = await authService.refreshSession(refreshToken);
 
     if (!tokenPair) {
         return res.status(401).json({ error: 'Token refreshing failed' });

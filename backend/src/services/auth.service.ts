@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken';
 import { User } from "../models/User";
 import { TokenPair } from '../shared/interfaces/TokenPair'
 import { tokenWhiteList } from '../config/cache'
+import { Session } from '../models/Session'
 
 dotenv.config();
 
@@ -46,7 +47,7 @@ export const generateRefreshToken = (user: User): string => {
     );
 };
 
-export const refreshTokens = async (token: string): Promise<TokenPair | null> => {
+export const refreshSession = async (token: string): Promise<TokenPair | null> => {
     try {
         const payload = jwt.verify(token, JWT_REFRESH_SECRET, refreshTokenOptions) as { id: string};
 
@@ -57,8 +58,7 @@ export const refreshTokens = async (token: string): Promise<TokenPair | null> =>
             throw new Error('User not found');
         }
 
-        const refreshToken = generateRefreshToken(user);
-        const accessToken = generateAccessToken(user);
+        const { accessToken, refreshToken } = await ensureSession(user);
 
         return {
             accessToken,
@@ -68,5 +68,31 @@ export const refreshTokens = async (token: string): Promise<TokenPair | null> =>
     catch (err) {
         console.error('Error refreshing tokens:', err.message);
         return null;
+    }
+}
+
+export const ensureSession  = async (user: User): Promise<TokenPair> => {
+    const refreshToken = generateRefreshToken(user);
+
+    const session = await Session.findOne({
+        where: {
+            userId: user.id
+        }
+    });
+
+    if (!session) {
+        await Session.create({
+            refreshToken,
+            userId: user.id
+        });
+    } else {
+        await session.update({ refreshToken });
+    }
+
+    const accessToken = generateAccessToken(user);
+
+    return {
+        accessToken,
+        refreshToken
     }
 }
