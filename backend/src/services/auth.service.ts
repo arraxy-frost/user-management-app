@@ -2,6 +2,7 @@ import * as dotenv from 'dotenv';
 import jwt from 'jsonwebtoken';
 import { User } from "../models/User";
 import { TokenPair } from '../shared/interfaces/TokenPair'
+import { tokenWhiteList } from '../config/cache'
 
 dotenv.config();
 
@@ -21,7 +22,7 @@ const refreshTokenOptions: jwt.SignOptions = {
 };
 
 export const generateAccessToken = (user: User): string => {
-    return jwt.sign(
+    const accessToken = jwt.sign(
         {
             id: user.id,
             role: user.Role,
@@ -29,6 +30,10 @@ export const generateAccessToken = (user: User): string => {
         JWT_ACCESS_SECRET,
         accessTokenOptions
     );
+
+    tokenWhiteList.set(user.id, accessToken);
+
+    return accessToken;
 };
 
 export const generateRefreshToken = (user: User): string => {
