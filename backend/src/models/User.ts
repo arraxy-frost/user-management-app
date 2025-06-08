@@ -33,7 +33,7 @@ export class User extends Model {
     @Column({
         type: DataType.ENUM(...Object.values(Roles)),
         allowNull: false,
-        defaultValue: Roles.USER,
+        defaultValue: Roles.MANAGER,
         validate: {
             notEmpty: true,
             isIn: [Object.values(Roles)],

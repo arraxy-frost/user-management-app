@@ -39,10 +39,7 @@ export const createUser = async (req: Request, res: Response) => {
 
     const newUser = await userService.createUser(userData);
 
-    res.json({
-        message: `User Created Successfully`,
-        data: newUser
-    });
+    res.json(newUser);
 }
 
 export const updateUser = async (req: Request, res: Response) => {
@@ -60,16 +57,13 @@ export const updateUser = async (req: Request, res: Response) => {
 export const deleteUser = async (req: Request, res: Response) => {
     const userId = req.params.id;
 
-    const result = await userService.deleteUser(userId);
+    const deletedUser = await userService.deleteUser(userId);
 
-    if (!result) {
+    if (!deletedUser) {
         res.status(404).json({
             message: 'User not found'
         })
     } else {
-        res.json({
-            message: `user deleted`,
-            data: result
-        });
+        res.json(deletedUser);
     }
 }
