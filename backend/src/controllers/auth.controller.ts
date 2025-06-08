@@ -101,7 +101,13 @@ export const checkAuth = async (req: AuthenticatedRequest, res: Response): Promi
 export const updateProfile = async (req: AuthenticatedRequest, res: Response): Promise<any> => {
     const { id } = req.user as AccessTokenPayload;
 
-    const updatedUser = await userService.updateUser(id, req.body)
+    const { name, email, password } = req.body;
+
+    const updatedUser = await userService.updateUser(id, {
+        name,
+        email,
+        passwordHash: await bcrypt.hash(password, 10)
+    });
 
     if (!updatedUser) {
         res.status(404).json({
@@ -111,6 +117,7 @@ export const updateProfile = async (req: AuthenticatedRequest, res: Response): P
         res.json(updatedUser);
     }
 }
+
 const setRefreshTokenCookie = (res: Response, refreshToken: string): void => {
     res.cookie('refreshToken', refreshToken, {
         httpOnly: true,

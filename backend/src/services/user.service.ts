@@ -48,7 +48,7 @@ export const getUserByEmail = async (email: string): Promise<User | null> => {
 
 export const updateUser = async (id: string, update: Partial<User>): Promise<User | null> => {
     const [affectedCount, updatedUsers] = await User.update(update, {
-        where: { id},
+        where: { id },
         returning: true
     });
 
