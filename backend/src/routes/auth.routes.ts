@@ -8,6 +8,7 @@ router.post('/register', authController.register);
 router.post('/logout', authController.logout);
 router.post('/refresh', authController.refresh);
 router.get('/profile', authController.getCurrentUser);
+router.patch('/profile', authController.updateProfile);
 router.get('/check', authController.checkAuth);
 
 export default router;

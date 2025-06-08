@@ -5,6 +5,7 @@ import { User } from "../models/User";
 import bcrypt from "bcrypt";
 import { TokenPair } from '../shared/interfaces/TokenPair'
 import { AuthenticatedRequest } from '../shared/interfaces/AuthenticatedRequest'
+import AccessTokenPayload from '../shared/interfaces/AccessTokenPayload'
 
 export const login = async (req: Request, res: Response): Promise<any> => {
     const { email, password } = req.body;
@@ -97,6 +98,19 @@ export const checkAuth = async (req: AuthenticatedRequest, res: Response): Promi
     res.status(204).send();
 }
 
+export const updateProfile = async (req: AuthenticatedRequest, res: Response): Promise<any> => {
+    const { id } = req.user as AccessTokenPayload;
+
+    const updatedUser = await userService.updateUser(id, req.body)
+
+    if (!updatedUser) {
+        res.status(404).json({
+            message: 'User not found'
+        });
+    } else {
+        res.json(updatedUser);
+    }
+}
 const setRefreshTokenCookie = (res: Response, refreshToken: string): void => {
     res.cookie('refreshToken', refreshToken, {
         httpOnly: true,
