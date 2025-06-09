@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { fetchProfile, checkAuth, login, refresh, logout, updateProfile } from '@/api/auth.ts'
+import { fetchProfile, checkAuth, login, refresh, logout, updateProfile, register } from '@/api/auth.ts'
 import type { UserData } from '@/types/UserData.ts'
 
 export const useAuthStore = defineStore('auth', {
@@ -8,7 +8,7 @@ export const useAuthStore = defineStore('auth', {
       id: '',
       name: '',
       email: '',
-      Role: '',
+      role: '',
     },
     accessToken: '',
     isAuthenticated: false,
@@ -16,6 +16,14 @@ export const useAuthStore = defineStore('auth', {
   actions: {
     async login(email: string, password: string) {
       const response: { access_token: string } | null = await login(email, password)
+
+      this.$state.accessToken = response?.access_token ?? ''
+      this.$state.isAuthenticated = true
+
+      await fetchProfile()
+    },
+    async register(email: string, password: string) {
+      const response: { access_token: string } | null = await register(email, password)
 
       this.$state.accessToken = response?.access_token ?? ''
       this.$state.isAuthenticated = true

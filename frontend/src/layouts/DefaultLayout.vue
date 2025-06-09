@@ -39,7 +39,7 @@ const redirectToPage = (page: string) => {
           My profile
         </button>
         <button
-          v-if="authStore.userData.Role === 'admin'"
+          v-if="authStore.userData.role === 'admin'"
           :class="{ selected: route.path.includes('/users') }"
           @click="redirectToPage('/users')"
         >

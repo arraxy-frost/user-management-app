@@ -8,19 +8,15 @@ const router = useRouter()
 
 const isRegisterEnabled = ref<boolean>(false)
 const email = ref<string>('')
-const username = ref<string>('')
 const password = ref<string>('')
 const error = ref<string>('')
 
 const onClickSubmit = async () => {
-  if (isRegisterEnabled.value)
-    await registerUser()
-  else
-    await loginUser()
-}
-
-const loginUser = async () => {
-  await authStore.login(email.value, password.value)
+ if (isRegisterEnabled.value) {
+   await authStore.register(email.value, password.value)
+ } else {
+   await authStore.login(email.value, password.value)
+ }
 
   if (authStore.isAuthenticated) {
     console.log('Login successful')
@@ -37,19 +33,11 @@ const loginUser = async () => {
     return
   }
 }
-
-const registerUser = async () => {
-  console.log('Registering user...', {
-    email: email.value,
-    username: username.value,
-    password: password.value
-  })
-}
 </script>
 
 <template>
   <div class="login-view">
-    <form class="login-form" @submit.prevent="onClickSubmit">
+    <form class="login-form" @submit.prevent>
       <h2 v-if="isRegisterEnabled">Registration</h2>
       <h2 v-else>Login</h2>
       <input
@@ -58,19 +46,16 @@ const registerUser = async () => {
         v-model="email"
       />
       <input
-        v-if="isRegisterEnabled"
-        type="text"
-        placeholder="Username"
-        v-model="username"
-      />
-      <input
         type="password"
         placeholder="Password"
         v-model="password"
       />
       <div class="buttons">
-        <button class="buttons__button-login" type="submit">Submit</button>
-        <button class="buttons__button-register" @click="isRegisterEnabled = !isRegisterEnabled">register</button>
+        <button class="buttons__button-login" @click="onClickSubmit">Submit</button>
+        <button class="buttons__button-register" @click="isRegisterEnabled = !isRegisterEnabled">
+          <span v-if="isRegisterEnabled">login</span>
+          <span v-else>register</span>
+        </button>
       </div>
       <div class="errors" v-if="error">
         <p v-if="!authStore.isAuthenticated" class="error-message">

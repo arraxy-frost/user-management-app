@@ -59,7 +59,7 @@ onMounted(async () => {
 
   email.value = fetchedUser?.email
   name.value = fetchedUser?.name
-  role.value = fetchedUser?.Role
+  role.value = fetchedUser?.role
 })
 </script>
 <template>

@@ -16,6 +16,21 @@ export const login = async (email: string, password: string) => {
   }
 }
 
+export const register = async (email: string, password: string) => {
+  try {
+    const response = await api.post('/auth/register', {
+      email,
+      password,
+    })
+    return {
+      access_token: response.data.access_token as string
+    }
+  } catch (error: any) {
+    console.warn(error)
+    return null
+  }
+}
+
 export const logout = async () => {
   try {
     await api.post('/auth/logout')
@@ -74,7 +89,7 @@ export const fetchProfile = async (): Promise<{
   id: '',
   name: '',
   email: '',
-  Role: '',
+  role: '',
 }> => {
   const response = await api.get('/auth/profile')
   return response.data

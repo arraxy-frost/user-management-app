@@ -1,11 +1,13 @@
 import api from '@/api/index.ts'
 import type { UpdateUserRequest } from '@/types/UpdateUserRequest.ts'
 
-export const getUsers = async (page: number, limit: number) => {
+export const getUsers = async (page: number, limit: number, email?: string, name?: string) => {
   const response = await api.get('/users', {
     params: {
       page,
       limit,
+      email,
+      name
     },
   })
 

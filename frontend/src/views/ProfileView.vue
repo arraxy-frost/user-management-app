@@ -55,7 +55,7 @@ onMounted(async () => {
       </div>
       <div class="profile-view__row">
         <div class="profile-view__row_title">Role:</div>
-        <div class="profile-view__row_text">{{ authStore.userData.Role }}</div>
+        <div class="profile-view__row_text">{{ authStore.userData.role }}</div>
       </div>
       <div class="profile-view__row" style="display: flex; justify-content: center;">
         <button type="submit">Update profile</button>

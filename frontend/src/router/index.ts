@@ -102,7 +102,7 @@ router.beforeEach(async (to, from, next) => {
   if (to.meta.requiresAuth) {
     const allowed = to.meta.allowedRoles as string[];
 
-    if (!allowed.includes(authStore.userData.Role)) {
+    if (!allowed.includes(authStore.userData.role)) {
       return next({ name: 'forbidden' });
     }
   }

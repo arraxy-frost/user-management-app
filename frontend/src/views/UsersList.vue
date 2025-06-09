@@ -6,6 +6,8 @@ import UsersListRow from '@/components/UsersListRow.vue'
 const usersStore = useUsersStore()
 const pageNum = ref<number>(1)
 const pageSize = ref<number>(10)
+const usernameFilter = ref<string>('')
+const emailFilter = ref<string>('')
 
 const onClickPrev = () => {
   if (pageNum.value > 1) {
@@ -20,6 +22,10 @@ const onClickNext = () => {
     pageNum.value++
     updatePage()
   }
+}
+
+const onClickAcceptFilters = () => {
+  usersStore.fetchUsers(pageNum.value, pageSize.value, emailFilter.value, usernameFilter.value)
 }
 
 const updatePage = () => {
@@ -39,6 +45,19 @@ onMounted(() => {
 <template>
   <div class="users-list">
     <h1>Users List</h1>
+    <div class="users-list__filters">
+      <div class="users-list__filters-option">
+        <div class="users-list__filters-option_title">Email: </div>
+        <input type="email" placeholder="Email" v-model="emailFilter" />
+      </div>
+      <div class="users-list__filters-option">
+        <div class="users-list__filters-option_title">Username: </div>
+        <input type="text" placeholder="Username" v-model="usernameFilter" />
+      </div>
+      <div class="users-list__filters-buttons">
+        <button @click="onClickAcceptFilters">Accept</button>
+      </div>
+    </div>
     <div class="users-list__content">
       <UsersListRow
         v-for="user in usersStore.users"
@@ -46,7 +65,7 @@ onMounted(() => {
         :id="user.id"
         :email="user.email"
         :username="user.name"
-        :role="user.Role"
+        :role="user.role"
       />
     </div>
     <div class="users-list__controls">
@@ -94,4 +113,21 @@ h1 {
   gap: 16px;
   box-sizing: border-box;
 }
+
+.users-list__filters {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+.users-list__filters-option {
+  display: flex;
+}
+
+.users-list__filters-option_title {
+  min-width: 128px;
+}
+
 </style>

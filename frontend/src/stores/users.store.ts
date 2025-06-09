@@ -5,7 +5,7 @@ interface User {
   id: string;
   name: string;
   email: string;
-  Role: string
+  role: string
 }
 
 export const useUsersStore = defineStore('users', {
@@ -16,8 +16,8 @@ export const useUsersStore = defineStore('users', {
     pageSize: 10,
   }),
   actions: {
-    async fetchUsers(page: number = 1, limit: number = 10) {
-      const { data, totalCount, page: currentPage, limit: pageSize } = await getUsers(page, limit)
+    async fetchUsers(page: number = 1, limit: number = 10, email?: string, name?: string) {
+      const { data, totalCount, page: currentPage, limit: pageSize } = await getUsers(page, limit, email, name)
 
       this.users = data
       this.totalUsers = totalCount
