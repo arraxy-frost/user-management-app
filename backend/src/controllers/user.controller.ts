@@ -4,22 +4,19 @@ import { User } from '../models/User'
 import { AuthenticatedRequest } from '../shared/interfaces/AuthenticatedRequest'
 
 export const getUsers = async (req: AuthenticatedRequest, res: Response) => {
-  const { limit = '10', page = '1' } = req.query as {
+  const { limit = '10', page = '1', email, name } = req.query as {
     limit?: string,
     page?: string,
-  };
-
-  const { email, name } = req.body as {
-    email?: string;
-    name?: string;
-  };
+    email?: string,
+    name?: string,
+  }
 
   res.json(await userService.getUsers(
     parseInt(limit),
     parseInt(page),
     email,
     name
-  ));
+  ))
 }
 
 export const getUserById = async (req: Request, res: Response) => {
