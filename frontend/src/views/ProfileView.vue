@@ -6,12 +6,10 @@ const authStore = useAuthStore()
 
 const username = ref('')
 const email = ref('')
+const password = ref('')
 
 const updateProfile = async () => {
-  await authStore.updateProfile({
-    name: username.value,
-    email: email.value,
-  })
+  await authStore.updateProfile(username.value, email.value, password.value)
   await authStore.fetchProfile()
 }
 
@@ -35,9 +33,7 @@ onMounted(async () => {
         <div class="profile-view__row_title">Email:</div>
         <input
           class="profile-view__row_input"
-          style="color: white; border: none"
-          disabled
-          type="text"
+          type="email"
           v-model="email"
         />
       </div>
@@ -50,10 +46,20 @@ onMounted(async () => {
         />
       </div>
       <div class="profile-view__row">
+        <div class="profile-view__row_title">New password:</div>
+        <input
+          class="profile-view__row_input"
+          type="password"
+          v-model="password"
+        />
+      </div>
+      <div class="profile-view__row">
         <div class="profile-view__row_title">Role:</div>
         <div class="profile-view__row_text">{{ authStore.userData.Role }}</div>
       </div>
-      <button type="submit">Update profile</button>
+      <div class="profile-view__row" style="display: flex; justify-content: center;">
+        <button type="submit">Update profile</button>
+      </div>
     </form>
   </div>
 </template>
@@ -91,17 +97,21 @@ input:focus {
 }
 
 button {
-  padding: 8px 16px;
-  background-color: #007bff;
+  padding: 12px 20px;
+  background-color: #4a90e2;
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: 6px;
   cursor: pointer;
-  transition: background-color 0.5s ease;
+  font-weight: 600;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+  align-self: flex-start;
 }
 
 button:hover {
   background-color: #0056b3;
+
 }
 
 .profile-view__row {
@@ -114,7 +124,7 @@ button:hover {
 
 .profile-view__row_title {
   font-weight: bold;
-  min-width: 96px;
+  min-width: 128px;
 }
 
 .profile-view__row_text {

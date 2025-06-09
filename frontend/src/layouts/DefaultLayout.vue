@@ -36,13 +36,14 @@ const redirectToPage = (page: string) => {
           :class="{ selected: route.path === '/profile' }"
           @click="redirectToPage('/profile')"
         >
-          Profile
+          My profile
         </button>
         <button
-          :class="{ selected: route.path === '/users' }"
+          v-if="authStore.userData.Role === 'admin'"
+          :class="{ selected: route.path.includes('/users') }"
           @click="redirectToPage('/users')"
         >
-          UserList
+          List of users
         </button>
       </nav>
       <router-view />
@@ -65,16 +66,14 @@ const redirectToPage = (page: string) => {
   display: flex;
   justify-content: flex-start;
   height: 100%;
-  gap: 16px;
-  padding: 0 16px 16px 16px;
   box-sizing: border-box;
 }
 
 .layout__nav {
   display: flex;
+  user-select: none;
   flex-direction: column;
-  width: 220px;
-  padding: 16px;
+  padding: 1em;
   height: 100%;
   border-radius: 8px;
   gap: 8px;
@@ -83,12 +82,13 @@ const redirectToPage = (page: string) => {
 .layout__nav > button {
   cursor: pointer;
   background-color: #2a2a2a;
-  padding: 10px 14px;
+  padding: 12px 16px;
   border: none;
-  border-radius: 6px;
+  min-width: 144px;
+  border-radius: 8px;
   color: #eee;
-  text-align: left;
-  font-size: 14px;
+  text-align: center;
+  font-size: 15px;
   transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
@@ -104,6 +104,7 @@ const redirectToPage = (page: string) => {
 }
 
 .layout__header {
+  user-select: none;
   height: 64px;
   width: 100%;
   display: flex;
@@ -143,14 +144,12 @@ const redirectToPage = (page: string) => {
   justify-content: center;
   border: none;
   border-radius: 50%;
-  background-color: transparent;
-  color: white;
+  background-color: white;
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .layout__header__logout_button:hover {
-  background-color: #4c0000;
-  color: #ffdddd;
+  background-color: indianred;
 }
 
 .layout__footer {

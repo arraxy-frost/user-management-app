@@ -3,6 +3,7 @@ import { useAuthStore } from '@/stores/auth.store.ts'
 import LoginViewVue from '../views/LoginView.vue'
 import ProfileView from '@/views/ProfileView.vue'
 import NotFound from '@/views/NotFound.vue'
+import ForbiddenError from '@/views/ForbiddenError.vue'
 import DashboardView from '@/views/DashboardView.vue'
 import UsersList from '@/views/UsersList.vue'
 import DefaultLayout from '@/layouts/DefaultLayout.vue'
@@ -39,11 +40,24 @@ const router = createRouter({
           name: 'user-edit',
           component: UserEditForm,
           props: true,
+          meta: {
+            requiresAuth: true,
+            allowedRoles: ['admin']
+          }
         },
         {
           path: 'users',
           name: 'users',
           component: UsersList,
+          meta: {
+            requiresAuth: true,
+            allowedRoles: ['admin']
+          }
+        },
+        {
+          path: 'forbidden',
+          name: 'forbidden',
+          component: ForbiddenError,
         },
       ],
     },
@@ -57,7 +71,6 @@ const router = createRouter({
 
 router.beforeEach(async (to, from, next) => {
   const authStore = useAuthStore()
-
   await authStore.checkAuth()
 
   if (!authStore.isAuthenticated) {
@@ -84,6 +97,14 @@ router.beforeEach(async (to, from, next) => {
 
   if (to.path === '/' || to.path === '/login') {
     return next('/dashboard')
+  }
+
+  if (to.meta.requiresAuth) {
+    const allowed = to.meta.allowedRoles as string[];
+
+    if (!allowed.includes(authStore.userData.Role)) {
+      return next({ name: 'forbidden' });
+    }
   }
 
   return next()

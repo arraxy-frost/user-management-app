@@ -1,7 +1,6 @@
 import { defineStore } from 'pinia'
-import { fetchProfile, checkAuth, login, refresh, logout } from '@/api/auth.ts'
-import { updateUser } from '@/api/users.ts'
-import type { UpdateUserRequest } from '@/types/UpdateUserRequest.ts'
+import { fetchProfile, checkAuth, login, refresh, logout, updateProfile } from '@/api/auth.ts'
+import type { UserData } from '@/types/UserData.ts'
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
@@ -16,19 +15,12 @@ export const useAuthStore = defineStore('auth', {
   }),
   actions: {
     async login(email: string, password: string) {
-      const response: {
-        access_token: string
-        user: {
-          id: string
-          name: string
-          email: string
-          Role: string
-        }
-      } = await login(email, password)
+      const response: { access_token: string } | null = await login(email, password)
 
-      this.$state.accessToken = response.access_token
-      this.$state.userData = response.user
+      this.$state.accessToken = response?.access_token ?? ''
       this.$state.isAuthenticated = true
+
+      await fetchProfile()
     },
     async logout() {
       await logout()
@@ -49,14 +41,20 @@ export const useAuthStore = defineStore('auth', {
     async checkAuth() {
       this.$state.isAuthenticated = await checkAuth()
     },
-    async updateProfile(userData: UpdateUserRequest) {
-      await updateUser(this.$state.userData.id, userData)
-      await fetchProfile()
+    async updateProfile(name: string, email: string, password: string): Promise<UserData | null> {
+      const updateResult = await updateProfile(name, email, password);
 
-      return true;
+      if (!updateResult) {
+        console.error('Failed to update profile')
+      }
+      else {
+        await fetchProfile()
+      }
+
+      return updateResult;
     },
     async fetchProfile() {
       this.$state.userData = await fetchProfile()
-    }
+    },
   },
 })

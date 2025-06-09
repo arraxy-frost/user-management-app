@@ -1,4 +1,5 @@
 import api from '@/api/index.ts'
+import type { UserData } from '@/types/UserData.ts'
 
 export const login = async (email: string, password: string) => {
   try {
@@ -7,8 +8,7 @@ export const login = async (email: string, password: string) => {
       password,
     })
     return {
-      access_token: response.data.access_token,
-      user: response.data.user,
+      access_token: response.data.access_token as string
     }
   } catch (error: any) {
     console.warn(error)
@@ -47,6 +47,26 @@ export const checkAuth = async (): Promise<boolean> => {
   catch (error: any) {
     console.warn(error)
     return false
+  }
+}
+
+export const updateProfile = async (
+  name: string,
+  email: string,
+  password: string,
+): Promise<UserData | null> => {
+  try {
+    console.log(name, email, password)
+    const response = await api.patch('/auth/profile', {
+      name,
+      email,
+      password,
+    })
+    return response.data
+  }
+  catch (error: any) {
+    console.error(error.message)
+    return null
   }
 }
 

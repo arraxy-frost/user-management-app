@@ -22,6 +22,16 @@ export const updateUser = async (userId: string, userData: UpdateUserRequest) =>
   }
 }
 
+export const deleteUser = async (userId: string) => {
+  try {
+    const response = await api.delete(`/users/${userId}`)
+    return response.data
+  } catch (error: any) {
+    console.error('Error deleting user:', error)
+    throw new Error(error.response?.data?.message || 'Failed to update user')
+  }
+}
+
 export const getUserById = async (userId: string) => {
   try {
     const response = await api.get(`/users/${userId}`)

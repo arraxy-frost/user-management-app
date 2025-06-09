@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
-import { useUsersStore} from '@/stores/users.store.ts'
+import { useUsersStore } from '@/stores/users.store.ts'
+import { useAuthStore} from '@/stores/auth.store.ts'
+import { updateUser, deleteUser } from '@/api/users.ts'
+import { useRouter } from 'vue-router'
 
 const props = defineProps({
   id: {
@@ -12,12 +15,43 @@ const props = defineProps({
 const email = ref('')
 const name = ref('')
 const role = ref('')
-const roles = ['admin', 'manager', 'user']
+const roles = ['admin', 'manager']
+const router = useRouter()
+
+const requestStatus = ref('')
 
 const usersStore = useUsersStore()
+const authStore = useAuthStore()
 
-const onClickUpdate = () => {
-  console.log('update user', props.id, email.value, name.value, role.value)
+const onClickUpdate = async () => {
+  const response = await updateUser(props.id, {
+    email: email.value,
+    name: name.value,
+    role: role.value,
+  })
+
+  requestStatus.value = response ? 'User updated successfully' : 'Failed to update user'
+
+  setTimeout(() => {
+    requestStatus.value = ''
+  }, 3000)
+}
+
+const onClickDelete = async () => {
+  if (authStore.userData.id === props.id) {
+    requestStatus.value = 'You cannot delete your own account'
+    setTimeout(() => requestStatus.value = '', 1000)
+    return
+  }
+
+  const response = await deleteUser(props.id)
+
+  requestStatus.value = response ? 'User deleted successfully' : 'Failed to delete user'
+
+  setTimeout(async () => {
+    requestStatus.value = '';
+    await router.push('/users');
+  }, 1000)
 }
 
 onMounted(async () => {
@@ -30,7 +64,8 @@ onMounted(async () => {
 </script>
 <template>
   <div class="user-edit-form">
-    <form @submit.prevent="onClickUpdate">
+    <h1>Edit user</h1>
+    <form @submit.prevent>
       <div class="user-edit-form__row">
         <div class="user-edit-form__row_title">ID:</div>
         {{ $props.id }}
@@ -51,8 +86,20 @@ onMounted(async () => {
           </option>
         </select>
       </div>
-      <div class="user-edit-form__row">
-        <button type="submit">Update</button>
+      <div class="user-edit-form__row" style="display: flex; justify-content: center">
+        <button class="user-edit-form__buttons-update" type="submit" @click="onClickUpdate">
+          Update
+        </button>
+        <button
+          class="user-edit-form__buttons-delete"
+          :class="{ unavailable: authStore.userData.id === $props.id }"
+          type="submit" @click="onClickDelete"
+        >
+          Delete
+        </button>
+      </div>
+      <div class="user-edit-form__row__status" style="text-align: center">
+        {{ requestStatus }}
       </div>
     </form>
   </div>
@@ -63,21 +110,20 @@ onMounted(async () => {
   flex-direction: column;
   align-items: center;
   width: 100%;
-  max-width: 800px;
   margin: 0 auto;
   padding: 2em;
+  gap: 2em;
   color: #eee;
-  background: #121212;
   border-radius: 10px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.8);
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: #121212;
 }
 
 form {
   display: flex;
   flex-direction: column;
   gap: 16px;
-  width: 100%;
+  max-width: 1024px;
 }
 
 .user-edit-form__row {
@@ -85,6 +131,24 @@ form {
   align-items: center;
   width: 100%;
   gap: 16px;
+}
+
+.user-edit-form__buttons-update {
+  background-color: #4a90e2;
+}
+
+.user-edit-form__buttons-delete {
+  background-color: #e74c3c;
+}
+
+.user-edit-form__buttons-delete.unavailable,
+.user-edit-form__buttons-delete.unavailable:hover {
+  background-color: #555;
+  cursor: not-allowed;
+}
+
+.user-edit-form__buttons-delete:hover {
+  background-color: #c0392b;
 }
 
 .user-edit-form__row_title {
@@ -103,7 +167,9 @@ select {
   border-radius: 6px;
   background-color: #222;
   color: #eee;
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  transition:
+    border-color 0.3s ease,
+    box-shadow 0.3s ease;
   font-family: inherit;
   cursor: text;
 }
@@ -146,5 +212,4 @@ button {
 button:hover {
   background-color: #357abd;
 }
-
 </style>

@@ -3,43 +3,74 @@ import { ref } from 'vue'
 import { useAuthStore } from '@/stores/auth.store.ts'
 import { useRouter } from 'vue-router'
 
-const authStore = useAuthStore();
-const router = useRouter();
+const authStore = useAuthStore()
+const router = useRouter()
 
-const email = ref<string>('');
-const password = ref<string>('');
-const error = ref<string>('');
+const isRegisterEnabled = ref<boolean>(false)
+const email = ref<string>('')
+const username = ref<string>('')
+const password = ref<string>('')
+const error = ref<string>('')
 
-const login = async () => {
-  await authStore.login(email.value, password.value);
+const onClickSubmit = async () => {
+  if (isRegisterEnabled.value)
+    await registerUser()
+  else
+    await loginUser()
+}
+
+const loginUser = async () => {
+  await authStore.login(email.value, password.value)
 
   if (authStore.isAuthenticated) {
-    console.log('Login successful');
-    await router.push('/dashboard');
+    console.log('Login successful')
+    await router.push('/dashboard')
+  } else {
+    console.log('Login failed')
+    error.value = 'Login failed'
+
+    setTimeout(() => (error.value = ''), 3000)
+
+    email.value = ''
+    password.value = ''
+
+    return
   }
-  else {
-    console.log('Login failed');
-    error.value = 'Login failed';
+}
 
-    setTimeout(() => error.value = '', 3000);
-
-    email.value = '';
-    password.value = '';
-
-    return;
-  }
-};
+const registerUser = async () => {
+  console.log('Registering user...', {
+    email: email.value,
+    username: username.value,
+    password: password.value
+  })
+}
 </script>
 
 <template>
   <div class="login-view">
-    <form class="login-form" @submit.prevent="login">
-      <h2>Login</h2>
-      <input type="email" placeholder="Email" v-model="email" />
-      <input type="password" placeholder="Password" v-model="password" />
+    <form class="login-form" @submit.prevent="onClickSubmit">
+      <h2 v-if="isRegisterEnabled">Registration</h2>
+      <h2 v-else>Login</h2>
+      <input
+        type="email"
+        placeholder="Email"
+        v-model="email"
+      />
+      <input
+        v-if="isRegisterEnabled"
+        type="text"
+        placeholder="Username"
+        v-model="username"
+      />
+      <input
+        type="password"
+        placeholder="Password"
+        v-model="password"
+      />
       <div class="buttons">
         <button class="buttons__button-login" type="submit">Submit</button>
-        <button class="buttons__button-register">register</button>
+        <button class="buttons__button-register" @click="isRegisterEnabled = !isRegisterEnabled">register</button>
       </div>
       <div class="errors" v-if="error">
         <p v-if="!authStore.isAuthenticated" class="error-message">
@@ -51,71 +82,71 @@ const login = async () => {
 </template>
 
 <style scoped>
-  .login-view {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    width: 100%;
-    height: 100vh;
-  }
+.login-view {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  width: 100%;
+  height: 100vh;
+}
 
-  .login-form {
-    display: flex;
-    flex-direction: column;
-    width: 300px;
-    gap: 8px;
-    padding: 1em;
-    box-sizing: border-box;
-  }
+.login-form {
+  display: flex;
+  flex-direction: column;
+  width: 300px;
+  gap: 8px;
+  padding: 1em;
+  box-sizing: border-box;
+}
 
-  .login-form > input {
-    padding: 8px;
-    font-size: 16px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-  }
+.login-form > input {
+  padding: 8px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
 
-  .buttons {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
-    width: 100%;
-    margin-top: 8px;
-  }
+.buttons {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+  margin-top: 8px;
+}
 
-  .buttons > button {
-    color: white;
-    border: none;
-    cursor: pointer;
-    transition: background-color 0.4s ease;
-  }
+.buttons > button {
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.4s ease;
+}
 
-  .buttons__button-login {
-    background-color: #0056b3;
-    padding: 8px;
-    width: 100%;
-    border-radius: 12px;
-  }
+.buttons__button-login {
+  background-color: #0056b3;
+  padding: 8px;
+  width: 100%;
+  border-radius: 12px;
+}
 
-  .buttons__button-login:hover {
-    background-color: #007bff;
-  }
+.buttons__button-login:hover {
+  background-color: #007bff;
+}
 
-  .buttons__button-register {
-    background-color: transparent;
-    border-radius: 25px;
-    width: 100px;
-    padding: 4px;
-    font-size: 11px;
-  }
+.buttons__button-register {
+  background-color: transparent;
+  border-radius: 25px;
+  width: 100px;
+  padding: 4px;
+  font-size: 11px;
+}
 
-  .buttons__button-register:hover {
-    background-color: rgba(64, 64, 64, 0.75);
-  }
+.buttons__button-register:hover {
+  background-color: rgba(64, 64, 64, 0.75);
+}
 
-  .errors {
-    color: red;
-  }
+.errors {
+  color: red;
+}
 </style>
