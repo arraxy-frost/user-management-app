@@ -106,7 +106,7 @@ export const updateProfile = async (req: AuthenticatedRequest, res: Response): P
     const updatedUser = await userService.updateUser(id, {
         name,
         email,
-        passwordHash: await bcrypt.hash(password, 10)
+        passwordHash: password ? await bcrypt.hash(password, 10) : undefined
     });
 
     if (!updatedUser) {
