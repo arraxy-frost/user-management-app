@@ -39,5 +39,11 @@ export class User extends Model {
             isIn: [Object.values(Roles)],
         }
     })
-    Role!: Roles;
+    role!: Roles;
+
+    toJSON = function() {
+        const values = Object.assign({}, this.get());
+        delete values.passwordHash;
+        return values;
+    };
 }

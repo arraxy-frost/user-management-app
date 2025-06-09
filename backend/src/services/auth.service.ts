@@ -26,7 +26,7 @@ export const generateAccessToken = (user: User): string => {
     const accessToken = jwt.sign(
         {
             id: user.id,
-            role: user.Role,
+            role: user.role,
         },
         JWT_ACCESS_SECRET,
         accessTokenOptions

@@ -1,68 +1,89 @@
-import bcrypt from 'bcrypt';
-import { User } from '../models/User';
+import bcrypt from 'bcrypt'
+import { User } from '../models/User'
+import { Op } from 'sequelize'
 
 export const createUser = async (userData: any): Promise<User> => {
-    const passwordHash = await bcrypt.hash(userData.password, 10);
+  const passwordHash = await bcrypt.hash(userData.password, 10)
 
-    return User.create({
-        name: userData.name,
-        email: userData.email,
-        passwordHash
-    });
+  return User.create({
+    name: userData.name,
+    email: userData.email,
+    passwordHash
+  })
 }
 
-export const getUsers = async (limit: number, page: number) => {
-    const offset = (page - 1) * limit;
+export const getUsers = async (
+  limit: number,
+  page: number,
+  email?: string,
+  name?: string
+) => {
+  const offset = (page - 1) * limit
+  const where: any = {}
 
-    const totalCount = await User.count();
-    const data = await User.findAll({
-        limit,
-        offset
-    });
+  if (email) {
+    where.email = {
+      [Op.like]: `%${email}%`
+    }
+  }
 
-    return {
-        limit,
-        page,
-        offset,
-        totalCount,
-        data
-    };
+  if (name) {
+    where.name = {
+      [Op.like]: `%${name}%`
+    }
+  }
+
+  const totalCount = await User.count()
+  const data = await User.findAll({
+    where,
+    limit,
+    offset,
+    order: [['createdAt', 'DESC']]
+  })
+
+  return {
+    limit,
+    page,
+    offset,
+    totalCount,
+    data
+  }
 }
 
 export const getUserById = async (id: string): Promise<User | null> => {
-    return User.findOne({
-        where: {
-            id
-        }
-    });
-};
+  return User.findOne({
+    where: {
+      id
+    }
+  })
+}
 
 export const getUserByEmail = async (email: string): Promise<User | null> => {
-    return User.findOne({
-        where: {
-            email
-        },
-        plain: true
-    });
+  return User.findOne({
+    where: {
+      email
+    },
+    plain: true
+  })
 }
 
 export const updateUser = async (id: string, update: Partial<User>): Promise<User | null> => {
-    const [affectedCount, updatedUsers] = await User.update(update, {
-        where: { id },
-        returning: true
-    });
+  const [affectedCount, updatedUsers] = await User.update(update, {
+    where: { id },
+    returning: true
+  })
 
-    if (affectedCount === 0) return null;
+  if (affectedCount === 0) return null
 
-    return updatedUsers[0].get();
-};
+  return updatedUsers[0].get()
+}
 
 export const deleteUser = async (id: string): Promise<User | null> => {
-    const user: User | null = await getUserById(id);
+  const user: User | null = await getUserById(id)
 
-    if (!user) return null;
+  if (!user) return null
 
-    await user.destroy();
+  await user.destroy()
 
-    return user;
+  return user
 }
