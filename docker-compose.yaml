@@ -1,0 +1,43 @@
+version: '3.9'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: postgres
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - ./pgdata:/var/lib/postgresql/data/pgdata
+    restart: unless-stopped
+    networks:
+      - qbeek-network
+
+  backend:
+    image: qbeek-backend
+    container_name: qbeek-backend
+    ports:
+      - "8080:3000"
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: ${POSTGRES_DB}
+      DB_PASS: ${POSTGRES_PASSWORD}
+      DB_USER: ${POSTGRES_USER}
+      JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET}
+      JWT_ACCESS_EXPIRES: ${JWT_ACCESS_EXPIRES}
+      JWT_REFRESH_EXPIRES: ${JWT_REFRESH_EXPIRES}
+      NODE_ENV: production
+    restart: unless-stopped
+    networks:
+      - qbeek-network
+
+networks:
+  qbeek-network:
+    driver: bridge
+    name: qbeek-network
